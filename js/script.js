@@ -109,7 +109,7 @@ $("form input:checkbox").change(function (event) {
         });
     };
 
-    //if an item is unchecked, potentially enable all and other conflicts 
+    //if an item is unchecked, potentially enable ALL workshops checkbox
     if ((eventName !== "all") && !$(this).prop('checked')) {
 
         let allStatus = true;
