@@ -3,6 +3,10 @@
 $("#name").focus();
 $('#other-title').hide();
 $('.activities').append('<div id="total"></div>');
+$("#payment").val("Credit Card");
+$("#paypal").hide;
+$("#bitcoin").hide;
+
 
 // ”Job Role” section
 // On job role change if other show input feild
@@ -146,16 +150,54 @@ $("form input:checkbox").change(function (event) {
       
 });
 // ”Register for Activities” section
-// Some events are at the same day and time as others. If the user selects a workshop, don't allow selection of a workshop at the same day and time -- you should disable the checkbox and visually indicate that the workshop in the competing time slot isn't available.
+// Some events are at the same day and time as others. If the user selects a workshop, don't allow selection of a workshop at 
+//the same day and time -- you should disable the checkbox and visually indicate that the workshop in the competing time slot isn't available.
 // When a user unchecks an activity, make sure that competing activities (if there are any) are no longer disabled.
-// As a user selects activities, a running total should display below the list of checkboxes. For example, if the user selects "Main Conference", then Total: $200 should appear. If they add 1 workshop, the total should change to Total: $300.
+// As a user selects activities, a running total should display below the list of checkboxes. For example, 
+//if the user selects "Main Conference", then Total: $200 should appear. If they add 1 workshop, the total should change to Total: $300.
+function togglePayments($paypal, $bitcoin, $creditCard, $active){
+    $paypal.hide();
+    $bitcoin.hide();
+    $creditCard.hide();
+    $active.show();
+};
 
-// "Payment Info" section
+//////// "Payment Info" section///////
+$("#payment").change(function (event) {
+    const paySelect = this.value;
+    const $paypal = $("#paypal");
+    const $bitcoin = $("#bitcoin");
+    const $creditCard = $("#credit-card");
+     
+    switch (paySelect) {
+        case "Credit Card":
+                togglePayments($paypal, $bitcoin, $creditCard, $creditCard);
+            break;
+        case "PayPal":
+                togglePayments($paypal, $bitcoin, $creditCard, $paypal);
+             break;
+        case "Bitcoin":
+                togglePayments($paypal, $bitcoin, $creditCard, $bitcoin)
+                break;
+        default:
+                $paypal.hide();
+                $bitcoin.hide();
+                $creditCard.hide();
+        ;
+
+    };
+
+});
+
 // Display payment sections based on the payment option chosen in the select menu.
-// The "Credit Card" payment option should be selected by default. Display the #credit-card div, and hide the "PayPal" and "Bitcoin" information. Payment option in the select menu should match the payment option displayed on the page.
-// When a user selects the "PayPal" payment option, the PayPal information should display, and the credit card and “Bitcoin” information should be hidden.
-// When a user selects the "Bitcoin" payment option, the Bitcoin information should display, and the credit card and “PayPal” information should be hidden.
-// The user should not be able to select the "Select Payment Method" option from the payment select menu, because the user should not be able to submit the form without a chosen payment option.
+// The "Credit Card" payment option should be selected by default. Display the #credit-card div, and hide the "PayPal" 
+//and "Bitcoin" information. Payment option in the select menu should match the payment option displayed on the page.
+// When a user selects the "PayPal" payment option, the PayPal information should display, and the credit card and “Bitcoin” 
+//information should be hidden.
+// When a user selects the "Bitcoin" payment option, the Bitcoin information should display, and the credit card and “PayPal” 
+//information should be hidden.
+// The user should not be able to select the "Select Payment Method" option from the payment select menu, 
+//because the user should not be able to submit the form without a chosen payment option.
 
 // Form validation
 // If any of the following validation errors exist, prevent the user from submitting the form:
