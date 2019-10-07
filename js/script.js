@@ -70,6 +70,7 @@ $("form input:checkbox").change(function (event) {
 
     // if all checked, disable the rest
     if ((eventName === "all") && $(this).prop('checked')) {
+        showOrHideError(!isValidActivities(),'register' );
         $events.each(function () {
             if (this.name !== 'all') {
                 setStatus($(this), "disabled");
@@ -79,6 +80,7 @@ $("form input:checkbox").change(function (event) {
 
     //if all unchecked enable all others
     if ((eventName === "all") && !$(this).prop('checked')) {
+        showOrHideError(!isValidActivities(),'register' );
         $events.each(function () {
             if (this.name !== 'all') {
                 setStatus($(this), "enabled");
@@ -88,6 +90,7 @@ $("form input:checkbox").change(function (event) {
 
     //if something besides all checked, 
     if ((eventName !== "all") && $(this).prop('checked')) {
+        showOrHideError(!isValidActivities(),'register' );
         $events.each(function () {
             const thisDateTime = $(this).data("day-and-time");
             //disable all, if not disabled already
@@ -105,6 +108,7 @@ $("form input:checkbox").change(function (event) {
 
     //if an item is unchecked, potentially enable new NON conflicts 
     if ((eventName !== "all") && !$(this).prop('checked')) {
+        showOrHideError(!isValidActivities(),'register' );
         $events.each(function () {
             const thisDateTime = $(this).data("day-and-time");
             if ((this.name !== 'all') && (thisDateTime === eventDateTime)) {
@@ -115,7 +119,7 @@ $("form input:checkbox").change(function (event) {
 
     //if an item is unchecked, potentially enable ALL workshops checkbox
     if ((eventName !== "all") && !$(this).prop('checked')) {
-
+        showOrHideError(!isValidActivities(),'register' );
         let allStatus = true;
         let allWorkshops;
         //check all the other items to see if they are checked
@@ -166,9 +170,9 @@ function clearCreditInfo() {
     $("#cc-num").val("");
     $("#zip").val("");
     $("#cvv").val("");
-    $('#cvv').off( "change" );
-    $('#cc-num').off( "change" );
-    $('#zip').off( "change" );
+    $('#cvv').off("change");
+    $('#cc-num').off("change");
+    $('#zip').off("change");
     $('#zipError').hide();
     $('#cvvError').hide();
     $('#cc-numError').hide();
@@ -212,73 +216,110 @@ $("#payment").change(function (event) {
 //because the user should not be able to submit the form without a chosen payment option.
 
 // Form validation
-function addErrorSpans(errorID, errorFor, erorMessage){
+function addErrorSpans(errorID, errorFor, erorMessage) {
     const $errorLocation = $(errorFor);
-    const $errorSpan = $('<span id="' + errorID +  'Error" class="error" style="color:red;display:none;">' +  erorMessage + '</span>');
+    const $errorSpan = $('<span id="' + errorID + 'Error" class="error" data-invalid-message="' + erorMessage + '" style="color:red;display:none;">' + erorMessage + '</span>');
     $errorLocation.after($errorSpan);
     $errorSpan.hide();
 }
 
-addErrorSpans('name',"label[for='name']", 'Please enter a valid Name, only enter letters.',  );
+addErrorSpans('name', "label[for='name']", 'Please enter a valid Name, only enter letters.', );
 addErrorSpans('mail', "label[for='mail']", 'Please enter a valid email.');
 addErrorSpans('title', "label[for='title']", 'Please select a valid jobe role.');
 addErrorSpans('cc-num', "label[for='cc-num']", 'Please enter a valid credit card number.');
 addErrorSpans('zip', "label[for='zip']", 'Invalid zip.');
-addErrorSpans('cvv',"label[for='cvv']", 'Invalid cvv.');
-addErrorSpans('register',"legend:contains('Register for Activities')", 'Please select a job role.');
+addErrorSpans('cvv', "label[for='cvv']", 'Invalid cvv.');
+addErrorSpans('register', "legend:contains('Register for Activities')", 'Please select an activity role.');
+
+function setErrorMessage(length, elementId, elementDisplayName){
+    if (length <= 0)
+    {
+        $('#'+ elementId + 'Error').text(elementDisplayName + ' can not be empty.');
+    }else{
+        $('#'+ elementId + 'Error').text($('#'+ elementId + 'Error').data('invalid-message'));
+    }
+}
 
 // Can only contain letters a-z in lowercase
 function isValidName(name) {
-    return /^[A-Za-z]+$/.test(name);
+    setErrorMessage(name.length, 'name', 'Name');
+    return /^[A-Za-z]+$/.test(name) && name.length > 0;
 };
 
 function isValidCCN(ccn) {
-    return /^[0-9]{13,16}$/.test(ccn);
+    setErrorMessage(ccn.length, 'cc-num', 'Credit Card Number');
+    return /^[0-9]{13,16}$/.test(ccn) && ccn.length > 0;
 };
+
 function isValidCVV(cvv) {
-    return /^[0-9]{3}$/.test(cvv);
+    setErrorMessage(cvv.length, 'cvv', 'CVV');
+    return /^[0-9]{3}$/.test(cvv) && cvv.length > 0;
 };
+
 function isValidZip(zip) {
-    return /^[0-9]{5}$/.test(zip);
+    setErrorMessage(zip.length, 'zip', 'Zip');
+    return /^[0-9]{5}$/.test(zip) && zip.length > 0;;
 };
 // Must be a valid email address
 function isValidEmail(email) {
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+    setErrorMessage(email.length, 'mail', 'Email');
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email) && email.length > 0;
 };
 
-function isValidActivities(email) {
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+function isValidActivities() {
+
+    
+    return $('input[type="checkbox"]:checked').length > 0;
 };
 
 function showOrHideError(showError, elementID) {
     // show element when show is true, hide when false
     const $errorSpan = $('#' + elementID + 'Error');
     if (showError) {
-        $errorSpan.show() ;
+        $errorSpan.show();
     } else {
         $errorSpan.hide();
     }
-  }
+}
 
 function createListener(validator) {
     return e => {
         const text = e.target.value;
         const valid = validator(text);
-        const showError = text !== "" && !valid;
+        const showError = !valid;
         showOrHideError(showError, e.target.getAttribute("id"));
     };
 }
 
-function validateForm(){
+function validateForm(event) {
+
+
+    $(".error:visible").hide();
+    $('#name').trigger( "input" );
+    $('#mail').trigger( "input" );
+    if ($("#payment").val() === "Credit Card") {
+        $('#cvv').trigger( "input" );
+        $('#cc-num').trigger( "input" );
+        $('#zip').trigger( "input" );
+    }
+
+    showOrHideError(!isValidActivities(),'register' );
+    
+    console.log($(".error:visible").length);
 
 };
 
-$('#name').change(createListener(isValidName));
-$('#mail').change(createListener(isValidEmail));
-$('#cvv').change(createListener(isValidCVV));
-$('#cc-num').change(createListener(isValidCCN));
-$('#zip').change(createListener(isValidZip));
-$(document).on('submit', validateForm());
+$('#name').on('input',createListener(isValidName));
+$('#mail').on('input',createListener(isValidEmail));
+$('#cvv').on('input',createListener(isValidCVV));
+$('#cc-num').on('input',createListener(isValidCCN));
+$('#zip').on('input',createListener(isValidZip));
+
+$('form').submit(function (event) {
+
+    event.preventDefault();
+    validateForm(event);
+});
 
 // 1) If any of the following validation errors exist, prevent the user from submitting the form:
 //    Name field can't be blank.
