@@ -47,8 +47,8 @@ $("#design").change(function (event) {
 });
 
 
-function setStatus(workshop, stateToSet){
-    if (stateToSet =="disabled"){
+function setStatus(workshop, stateToSet) {
+    if (stateToSet == "disabled") {
         workshop.prop("checked", false);
         workshop.prop("disabled", true);
         workshop.parent().addClass("disabled");
@@ -72,7 +72,7 @@ $("form input:checkbox").change(function (event) {
     if ((eventName === "all") && $(this).prop('checked')) {
         $events.each(function () {
             if (this.name !== 'all') {
-                setStatus($(this), "disabled");                
+                setStatus($(this), "disabled");
             };
         });
     };
@@ -81,22 +81,22 @@ $("form input:checkbox").change(function (event) {
     if ((eventName === "all") && !$(this).prop('checked')) {
         $events.each(function () {
             if (this.name !== 'all') {
-                setStatus($(this), "enabled");     
+                setStatus($(this), "enabled");
             };
         });
     };
 
     //if something besides all checked, 
     if ((eventName !== "all") && $(this).prop('checked')) {
-            $events.each(function () {
+        $events.each(function () {
             const thisDateTime = $(this).data("day-and-time");
             //disable all, if not disabled already
-            if ((this.name === 'all') && ( !$(this).parent().hasClass("disabled"))) {
+            if ((this.name === 'all') && (!$(this).parent().hasClass("disabled"))) {
                 setStatus($(this), "disabled");
             };
 
             //check others with same datetime data attribute and disable if required
-            if (this.name !== 'all' && (this.name !== eventName)  && (thisDateTime === eventDateTime) && ( !$(this).parent().hasClass("disabled"))) {
+            if (this.name !== 'all' && (this.name !== eventName) && (thisDateTime === eventDateTime) && (!$(this).parent().hasClass("disabled"))) {
                 setStatus($(this), "disabled");;
             };
         });
@@ -123,12 +123,12 @@ $("form input:checkbox").change(function (event) {
             if ((this.name !== 'all') && ($(this).prop('checked'))) {
                 allStatus = false;
             };
-            if (this.name === 'all'){
+            if (this.name === 'all') {
                 allWorkshops = this;
             }
         });
         //if all clear, enable all workshop checkbox
-        if (allStatus){
+        if (allStatus) {
             setStatus($(allWorkshops), "enabled");
         }
 
@@ -136,18 +136,18 @@ $("form input:checkbox").change(function (event) {
 
     //Calculate current cost
     let cost = 0;
-    $events.each(function () { 
-        if ($(this).prop('checked')){
-            cost +=   Number.parseInt(this.getAttribute("data-cost").replace(/\$/g, ''), 10);            
-        };       
+    $events.each(function () {
+        if ($(this).prop('checked')) {
+            cost += Number.parseInt(this.getAttribute("data-cost").replace(/\$/g, ''), 10);
+        };
     });
-    
+
     //Display the total cost for activities
     $("#total").html('<div id="total">Total: $' + cost + '.00</div>');
-    
-     
 
-      
+
+
+
 });
 // ”Register for Activities” section
 // Some events are at the same day and time as others. If the user selects a workshop, don't allow selection of a workshop at 
@@ -155,11 +155,23 @@ $("form input:checkbox").change(function (event) {
 // When a user unchecks an activity, make sure that competing activities (if there are any) are no longer disabled.
 // As a user selects activities, a running total should display below the list of checkboxes. For example, 
 //if the user selects "Main Conference", then Total: $200 should appear. If they add 1 workshop, the total should change to Total: $300.
-function togglePayments($paypal, $bitcoin, $creditCard, $active){
+function togglePayments($paypal, $bitcoin, $creditCard, $active) {
     $paypal.hide();
     $bitcoin.hide();
     $creditCard.hide();
     $active.show();
+};
+
+function clearCreditInfo() {
+    $("#cc-num").val("");
+    $("#zip").val("");
+    $("#cvv").val("");
+    $('#cvv').off( "change" );
+    $('#cc-num').off( "change" );
+    $('#zip').off( "change" );
+    $('#zipError').hide();
+    $('#cvvError').hide();
+    $('#cc-numError').hide();
 };
 
 //////// "Payment Info" section///////
@@ -168,62 +180,131 @@ $("#payment").change(function (event) {
     const $paypal = $("#paypal");
     const $bitcoin = $("#bitcoin");
     const $creditCard = $("#credit-card");
-     
+
     switch (paySelect) {
         case "Credit Card":
-                togglePayments($paypal, $bitcoin, $creditCard, $creditCard);
+            togglePayments($paypal, $bitcoin, $creditCard, $creditCard);
+            $('#cvv').change(createListener(isValidCVV));
+            $('#cc-num').change(createListener(isValidCCN));
+            $('#zip').change(createListener(isValidZip));
             break;
         case "PayPal":
-                togglePayments($paypal, $bitcoin, $creditCard, $paypal);
-             break;
+            togglePayments($paypal, $bitcoin, $creditCard, $paypal);
+            clearCreditInfo();
+            break;
         case "Bitcoin":
-                togglePayments($paypal, $bitcoin, $creditCard, $bitcoin)
-                break;
+            togglePayments($paypal, $bitcoin, $creditCard, $bitcoin)
+            clearCreditInfo();
+            break;
         default:
-                $paypal.hide();
-                $bitcoin.hide();
-                $creditCard.hide();
-        ;
+            $paypal.hide();
+            $bitcoin.hide();
+            $creditCard.hide();
+            clearCreditInfo();;
 
     };
 
 });
 
-// Display payment sections based on the payment option chosen in the select menu.
-// The "Credit Card" payment option should be selected by default. Display the #credit-card div, and hide the "PayPal" 
-//and "Bitcoin" information. Payment option in the select menu should match the payment option displayed on the page.
-// When a user selects the "PayPal" payment option, the PayPal information should display, and the credit card and “Bitcoin” 
-//information should be hidden.
-// When a user selects the "Bitcoin" payment option, the Bitcoin information should display, and the credit card and “PayPal” 
-//information should be hidden.
+
+
 // The user should not be able to select the "Select Payment Method" option from the payment select menu, 
 //because the user should not be able to submit the form without a chosen payment option.
 
 // Form validation
-// If any of the following validation errors exist, prevent the user from submitting the form:
-// Name field can't be blank.
-// Email field must be a validly formatted e-mail address (you don't have to check that it's a real e-mail address, just that it's formatted like one: dave@teamtreehouse.com for example.
-// User must select at least one checkbox under the "Register for Activities" section of the form.
-// If the selected payment option is "Credit Card," make sure the user has supplied a Credit Card number, a Zip Code, and a 3 number CVV value before the form can be submitted.
-// Credit Card field should only accept a number between 13 and 16 digits.
-// The Zip Code field should accept a 5-digit number.
-// The CVV should only accept a number that is exactly 3 digits long.
-// NOTE: Don't rely on the built in HTML5 validation by adding the required attribute to your DOM elements. You need to actually create your own custom validation checks and error messages.
+function addErrorSpans(errorID, errorFor, erorMessage){
+    const $errorLocation = $(errorFor);
+    const $errorSpan = $('<span id="' + errorID +  'Error" class="error" style="color:red;display:none;">' +  erorMessage + '</span>');
+    $errorLocation.after($errorSpan);
+    $errorSpan.hide();
+}
 
+addErrorSpans('name',"label[for='name']", 'Please enter a valid Name, only enter letters.',  );
+addErrorSpans('mail', "label[for='mail']", 'Please enter a valid email.');
+addErrorSpans('title', "label[for='title']", 'Please select a valid jobe role.');
+addErrorSpans('cc-num', "label[for='cc-num']", 'Please enter a valid credit card number.');
+addErrorSpans('zip', "label[for='zip']", 'Invalid zip.');
+addErrorSpans('cvv',"label[for='cvv']", 'Invalid cvv.');
+addErrorSpans('register',"legend:contains('Register for Activities')", 'Please select a job role.');
 
-// Make sure your validation is only validating Credit Card info if Credit Card is the selected payment method.
+// Can only contain letters a-z in lowercase
+function isValidName(name) {
+    return /^[A-Za-z]+$/.test(name);
+};
+
+function isValidCCN(ccn) {
+    return /^[0-9]{13,16}$/.test(ccn);
+};
+function isValidCVV(cvv) {
+    return /^[0-9]{3}$/.test(cvv);
+};
+function isValidZip(zip) {
+    return /^[0-9]{5}$/.test(zip);
+};
+// Must be a valid email address
+function isValidEmail(email) {
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+};
+
+function isValidActivities(email) {
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+};
+
+function showOrHideError(showError, elementID) {
+    // show element when show is true, hide when false
+    const $errorSpan = $('#' + elementID + 'Error');
+    if (showError) {
+        $errorSpan.show() ;
+    } else {
+        $errorSpan.hide();
+    }
+  }
+
+function createListener(validator) {
+    return e => {
+        const text = e.target.value;
+        const valid = validator(text);
+        const showError = text !== "" && !valid;
+        showOrHideError(showError, e.target.getAttribute("id"));
+    };
+}
+
+function validateForm(){
+
+};
+
+$('#name').change(createListener(isValidName));
+$('#mail').change(createListener(isValidEmail));
+$('#cvv').change(createListener(isValidCVV));
+$('#cc-num').change(createListener(isValidCCN));
+$('#zip').change(createListener(isValidZip));
+$(document).on('submit', validateForm());
+
+// 1) If any of the following validation errors exist, prevent the user from submitting the form:
+//    Name field can't be blank.
+// 2) Email field must be a validly formatted e-mail address (you don't have to check that it's a real e-mail address, just that it's formatted like one: dave@teamtreehouse.com for example.
+// 3) User must select at least one checkbox under the "Register for Activities" section of the form.
+// 4) If the selected payment option is "Credit Card," 
+//    make sure the user has supplied a 
+//      a) Credit Card number - a number between 13 and 16 digits.
+//      b) a Zip Code - a 5-digit number., 
+//      c) 3 number CVV value - a 3 digit number
+//before the form can be submitted.
+// 5) Make sure your validation is only validating Credit Card info if Credit Card is the selected payment method.
 
 // Form validation messages
-// Provide some kind of indication when there’s a validation error. The field’s borders could turn red, for example, or even better for the user would be if a red text message appeared near the field.
+// Provide some kind of indication when there’s a validation error. The field’s borders could turn red, for example, 
+// or even better for the user would be if a red text message appeared near the field.
 // The following fields should have some obvious form of an error indication:
-// Name field
-// Email field
-// Register for Activities checkboxes (at least one must be selected)
-// Credit Card number (Only if Credit Card payment method is selected)
-// Zip Code (Only if Credit Card payment method is selected)
-// CVV (Only if Credit Card payment method is selected)
+//      1) Name field
+//      2) Email field
+//      3) Register for Activities checkboxes (at least one must be selected)
+//      4) Credit Card number (Only if Credit Card payment method is selected)
+//      6) Zip Code (Only if Credit Card payment method is selected)
+//      7) CVV (Only if Credit Card payment method is selected)
 // Error messages or indications should not be visible by default. They should only show upon submission, or after some user interaction.
 
 // Avoid use alerts for your validation messages.
 
-// If a user tries to submit an empty form, there should be an error indication or message displayed for the name field, the email field, the activity section, and the credit card fields if credit card is the selected payment method.
+// If a user tries to submit an empty form, there should be an error indication or message displayed for the name field, 
+//the email field, the activity section, and the credit card fields if credit card is the selected payment method.
