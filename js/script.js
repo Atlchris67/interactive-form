@@ -4,9 +4,10 @@ $("#name").focus();
 $('#other-title').hide();
 $('.activities').append('<div id="total"></div>');
 $("#payment").val("Credit Card");
-$("#paypal").hide;
-$("#bitcoin").hide;
-
+$("#paypal").hide();
+$("#bitcoin").hide();
+$("#color").after('<span id="colorMessage">Please select a T-shirt theme</span>');
+$("#color").hide();
 
 // ”Job Role” section
 // On job role change if other show input feild
@@ -22,9 +23,18 @@ $("#title").change(function (event) {
 $("#design").change(function (event) {
     const themeSelect = this.value;
     const colorInput = $("#color");
+    
+    $("#colorMessage").hide();
+    $("#color").show();
 
     colorInput.empty();
     switch (themeSelect) {
+        case null:
+        case "Select Theme":
+            $("#colorMessage").show();
+            $("#color").hide();
+            $("#colorMessage").css("color","red");
+            break;
         case "js puns":
             colorInput.append(`<option value="cornflowerblue">Cornflower Blue (JS Puns shirt only)</option>
                 <option value="darkslategrey">Dark Slate Grey (JS Puns shirt only)</option> 
@@ -62,36 +72,18 @@ function setStatus(workshop, stateToSet) {
 
 $("form input:checkbox").change(function (event) {
     const $events = $(":checkbox");
+    const $workshops = $(":checkbox:not([name=all])");  
     const $checkedEvent = event.target;
     const eventName = this.name;
     const eventDateTime = $(this).data("day-and-time");
     console.log(eventDateTime);
 
 
-    // if all checked, disable the rest
-    if ((eventName === "all") && $(this).prop('checked')) {
-        showOrHideError(!isValidActivities(),'register' );
-        $events.each(function () {
-            if (this.name !== 'all') {
-                setStatus($(this), "disabled");
-            };
-        });
-    };
-
-    //if all unchecked enable all others
-    if ((eventName === "all") && !$(this).prop('checked')) {
-        showOrHideError(!isValidActivities(),'register' );
-        $events.each(function () {
-            if (this.name !== 'all') {
-                setStatus($(this), "enabled");
-            };
-        });
-    };
 
     //if something besides all checked, 
     if ((eventName !== "all") && $(this).prop('checked')) {
         showOrHideError(!isValidActivities(),'register' );
-        $events.each(function () {
+        $workshops.each(function () {
             const thisDateTime = $(this).data("day-and-time");
             //disable all, if not disabled already
             if ((this.name === 'all') && (!$(this).parent().hasClass("disabled"))) {
@@ -109,7 +101,7 @@ $("form input:checkbox").change(function (event) {
     //if an item is unchecked, potentially enable new NON conflicts 
     if ((eventName !== "all") && !$(this).prop('checked')) {
         showOrHideError(!isValidActivities(),'register' );
-        $events.each(function () {
+        $workshops.each(function () {
             const thisDateTime = $(this).data("day-and-time");
             if ((this.name !== 'all') && (thisDateTime === eventDateTime)) {
                 setStatus($(this), "enabled");
@@ -118,17 +110,17 @@ $("form input:checkbox").change(function (event) {
     };
 
     //if an item is unchecked, potentially enable ALL workshops checkbox
-    if ((eventName !== "all") && !$(this).prop('checked')) {
+    /**if ((eventName !== "all") && !$(this).prop('checked')) {
         showOrHideError(!isValidActivities(),'register' );
         let allStatus = true;
         let allWorkshops;
         //check all the other items to see if they are checked
-        $events.each(function () {
+        $workshops.each(function () {
             if ((this.name !== 'all') && ($(this).prop('checked'))) {
                 allStatus = false;
             };
             if (this.name === 'all') {
-                allWorkshops = this;
+                allWorkshops = true;
             }
         });
         //if all clear, enable all workshop checkbox
@@ -137,7 +129,7 @@ $("form input:checkbox").change(function (event) {
         }
 
     };
-
+*/
     //Calculate current cost
     let cost = 0;
     $events.each(function () {
@@ -229,7 +221,7 @@ addErrorSpans('title', "label[for='title']", 'Please select a valid jobe role.')
 addErrorSpans('cc-num', "label[for='cc-num']", 'Please enter a valid credit card number.');
 addErrorSpans('zip', "label[for='zip']", 'Invalid zip.');
 addErrorSpans('cvv', "label[for='cvv']", 'Invalid cvv.');
-addErrorSpans('register', "legend:contains('Register for Activities')", 'Please select an activity role.');
+addErrorSpans('register', "legend:contains('Register for Activities')", 'Please select an activity.');
 
 function setErrorMessage(length, elementId, elementDisplayName){
     if (length <= 0)
