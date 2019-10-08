@@ -26,7 +26,7 @@ $('#zip').on('input',createListener(isValidZip));
 addErrorSpans('name', "label[for='name']", 'Please enter a valid Name, only enter letters.', );
 addErrorSpans('mail', "label[for='mail']", 'Please enter a valid email.');
 addErrorSpans('title', "label[for='title']", 'Please select a valid jobe role.');
-addErrorSpans('cc-num', "label[for='cc-num']", 'Please enter a valid credit card number.');
+addErrorSpans('cc-num', "label[for='cc-num']", 'Please enter a number that is between 13 and 16 digits long.');
 addErrorSpans('zip', "label[for='zip']", 'Invalid zip.');
 addErrorSpans('cvv', "label[for='cvv']", 'Invalid cvv.');
 addErrorSpans('register', "legend:contains('Register for Activities')", 'Please select an activity.');
