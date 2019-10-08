@@ -8,13 +8,13 @@ This project enhances an interactive registration form for a fictional conferenc
 
     Avoid HTML5 validation and the use of required attribute.
     Create custom validation and error messages.
-    Avoid using snippets ot plugins.
+    Avoid using snippets or plugins.
 
 ## Project Requirements
 
 This project is reviewed and graded based on a set of requirements.
 
-### Meets Expectations
+#### Meets Expectations
 
 - [x] Project includes jQuery and utilizes it in at least some aspect of the form.
 - [x] On page load, the cursor appears in the "Name" field, ready for a user to type.
@@ -26,7 +26,7 @@ This project is reviewed and graded based on a set of requirements.
 - [x] The "Credit Card" payment option is selected by default.
 - [x] Payment option in the select menu matches the payment option displayed on the page.
 - [x] When a user chooses a payment option, the chosen payment section is revealed and the other payment sections are hidden.
-- [ ] Form cannot be submitted (the page does not refresh when the submit button is clicked)  until the following requirements have been met:
+Form cannot be submitted (the page does not refresh when the submit button is clicked)  until the following requirements have been met:
 - [x] Name field isn’t blank.
 - [x] Email field contains validly formatted e-mail address.
 - [x] At least one checkbox under "Register for Activities" section must be selected.
@@ -36,8 +36,9 @@ This project is reviewed and graded based on a set of requirements.
 - [x] 2) Email field
 - [x] “Register for Activities” checkboxes
 - [x] Credit Card number, Zip code, and CVV, only if the credit card payment method is selected. 
+- [x] Form submits when all requirements are meet.
 
-### Exceeds Expectations
+#### Exceeds Expectations
 
 - [x] “Color” drop down menu is hidden until a T-Shirt design is selected.
 - [x] Form provides at least one error message in real time, before the form is submitted. For example, the error message appears near the email field when the user begins to type, and disappears as soon as the user has entered a complete and correctly formatted email address.
