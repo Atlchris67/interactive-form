@@ -6,8 +6,9 @@ $('.activities').append('<div id="total"></div>');
 $("#payment").val("Credit Card");
 $("#paypal").hide();
 $("#bitcoin").hide();
-$("#color").after('<span id="colorMessage">Please select a T-shirt theme</span>');
+$("#color").after('<span id="colorMessage" class="error" >Please select a T-shirt theme</span>');
 $("#color").hide();
+$("select#payment option:first-child" ).attr("disabled","disabled");
 
 // ”Job Role” section
 // On job role change if other show input feild
@@ -139,7 +140,7 @@ $("form input:checkbox").change(function (event) {
     });
 
     //Display the total cost for activities
-    $("#total").html('<div id="total">Total: $' + cost + '.00</div>');
+    $("#total").html('<div id="total"><strong>Total: $' + cost + '.00</strong></div>');
 
 
 
